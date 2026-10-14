@@ -2,7 +2,7 @@ import { StrategyDeck } from './StrategyDeck';
 import { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { content, projects, type Project, type Company, type Media } from './content';
+import { content, projects, homeProjects, type Project, type Company, type Media, type ComparisonItem } from './content';
 import { ContactLink } from './ContactLink';
 import './style.css';
 const caseUrl = (slug: string) => `${import.meta.env.BASE_URL}cases/${slug}/`;
@@ -18,6 +18,12 @@ function ProjectCard({ project, next = false }: { project: Project; next?: boole
     <a className="project-link" href={caseUrl(project.slug)} aria-label={`${next ? 'Перейти' : 'Подробнее'}: ${project.title}`}>{next ? 'ПЕРЕЙТИ' : 'ПОДРОБНЕЕ'} ›</a>
   </article>;
 }
+function CaseComparison({ items }: { items: ComparisonItem[] }) {
+  return <div className={`case-comparison${items.length === 1 ? ' case-comparison-single' : ''}`}>{items.map(item => <figure key={item.label}>
+    <div className="project-image phone">{item.image ? <img src={item.image} alt={item.alt}/> : <div className="phone-placeholder">{item.placeholder ?? 'Скриншот будет добавлен'}</div>}</div>
+    {!item.hideCaption && <figcaption><h3>{item.label}</h3><p>{item.caption}</p></figcaption>}
+  </figure>)}</div>;
+}
 function ContactFooter() {
   return <footer className="contact-footer"><ContactLink value={content.links.telegram}>{content.contactLabel}</ContactLink></footer>;
 }
@@ -28,14 +34,14 @@ function HomePage() {
   return <main className="portfolio home-page"><header className="intro"><img className="avatar" src={content.avatar} alt={content.avatarAlt}/><h1>{content.name}</h1><p className="role">{content.role}</p><p className="bio">{content.intro}</p><nav className="contacts" aria-label="Контакты"><ContactLink value={content.links.cv}>CV</ContactLink><span className="separator" aria-hidden="true">/</span><ContactLink value={content.links.email} email>EMAIL</ContactLink><span className="separator" aria-hidden="true">/</span><ContactLink value={content.links.telegram}>TELEGRAM</ContactLink></nav></header><div className="experiences">{content.companies.map(company => <Experience key={company.name} company={company}/>)}</div><ContactFooter/><StrategyDeck/></main>;
 }
 function CasePage({ project }: { project: Project }) {
-  const next = projects.find(item => item.slug === project.next);
+  const next = homeProjects.find(item => item.slug === project.next);
   return <main className={`portfolio case-page case-${project.slug}`}>
     <a className="back-link" href={import.meta.env.BASE_URL}>‹ НАЗАД</a>
-    <header className="case-header"><h1><img className={project.logoWide ? 'wide-logo' : ''} src={project.logo} alt=""/><span>{project.title}</span></h1><p className="case-intro">{project.description}</p>
+    <header className="case-header"><h1><img className={project.logoWide ? 'wide-logo' : ''} src={project.logo} alt=""/><span>{project.caseTitle ?? project.title}</span></h1><p className="case-intro">{project.caseIntro ?? project.description}</p>
       {project.metrics && <dl className="metrics">{project.metrics.map(metric => <div key={metric.value}><dt>{metric.value}</dt><dd><span className="metric-desktop">{metric.label}</span><span className="metric-tablet">{metric.tabletLabel || metric.label}</span><span className="metric-mobile">{metric.mobileLabel || metric.label}</span></dd></div>)}</dl>}
     </header>
     <div className="case-content"><ProjectMedia media={project}/>
-      {project.blocks.map((block,index) => block.type === 'images' ? <div className="case-gallery" key={index}>{block.items.map(media => <ProjectMedia key={media.image} media={media}/>)}</div> : <div className="case-notes" key={index}>{block.items.map(item => <section className="case-note" key={`${item.number}-${item.title}`}><span className="note-number" aria-hidden="true">{item.number}</span><div><h2>{item.title}</h2><p>{item.text}</p></div></section>)}</div>)}
+      {project.blocks.map((block,index) => block.type === 'comparison' ? <CaseComparison key={index} items={block.items}/> : block.type === 'images' ? <div className="case-gallery" key={index}>{block.items.map(media => <ProjectMedia key={media.image} media={media}/>)}</div> : <div className="case-notes" key={index}>{block.items.map(item => <section className="case-note" key={`${item.number}-${item.title}`}><span className="note-number" aria-hidden="true">{item.number}</span><div><h2>{item.title}</h2>{item.subtitle && <h3>{item.subtitle}</h3>}<p>{item.text}</p></div></section>)}</div>)}
     </div>
     {next && <section className="next-project" aria-labelledby="next-title"><h2 id="next-title">СЛЕДУЮЩИЙ ПРОЕКТ</h2><ProjectCard project={next} next/></section>}
     <ContactFooter/>
@@ -46,8 +52,8 @@ function App() {
   const path = pathname.replace(/\/+$/, '');
   const selected = projects.find(project => path === `/cases/${project.slug}`);
   useEffect(() => {
-    document.title = selected ? `${selected.title} — ${content.name}` : `${content.name} — ${content.role}`;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', selected?.description || content.intro);
+    document.title = selected ? `${selected.caseTitle ?? selected.title} — ${content.name}` : `${content.name} — ${content.role}`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', selected?.caseIntro || selected?.description || content.intro);
   }, [selected]);
   useEffect(() => {
     const root = document.getElementById('root')!;
@@ -101,6 +107,6 @@ function App() {
       window.removeEventListener('popstate', onPopState);
     };
   }, []);
-  return selected ? <CasePage project={selected}/> : path === '' ? <HomePage/> : <main className="portfolio"><h1>Страница не найдена</h1><a className="project-link" href="/">‹ НА ГЛАВНУЮ</a></main>;
+  return selected ? <CasePage project={selected}/> : path === '' ? <HomePage/> : <main className="portfolio"><h1>Страница не найдена</h1><a className="project-link" href="/">‹ НА ГЛАВНУЮ</a></main>;
 }
 createRoot(document.getElementById('root')!).render(<App/>);

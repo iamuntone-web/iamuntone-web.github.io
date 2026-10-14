@@ -21,7 +21,7 @@ export function StrategyDeck() {
   };
   return <section className="strategies" aria-labelledby="strategies-title">
     <h2 id="strategies-title">ОБХОДНЫЕ СТРАТЕГИИ</h2>
-    <p className="strategies-intro">Застрял? Вытащи карточку, вдруг она подкинет свежую мысль. Эти необычные подсказки придумали Брайан Ино и Питер Шмидт в 1975 году, чтобы выходить из творческого тупика.</p>
+    <p className="strategies-intro">Застрял? Вытащи карточку, вдруг она подкинет свежую мысль. Эти необычные подсказки придумали Брайан Ино и Питер Шмидт в 1975 году, чтобы выходить из творческого тупика.</p>
     <div className={`strategy-deck ${phase}`}>
       <div className="strategy-back strategy-left" aria-hidden="true"/>
       <div className="strategy-back strategy-right" aria-hidden="true"/>
@@ -30,7 +30,7 @@ export function StrategyDeck() {
         if (phase === 'leaving') { setText(pending.current); setPhase('entering'); }
         else if (phase === 'entering') setPhase('idle');
       }}>
-        <span className="strategy-content"><img src="/assets/strategy-spark.png" alt=""/><span>{text || <>Нажми на карточку<br/>для подсказки</>}</span></span>
+        <span className="strategy-content"><img src="/assets/strategy-spark.png" alt=""/><span>{text || <>Нажми на карточку<br/>для подсказки</>}</span></span>
       </button>
     </div>
     <button className="strategy-sound" type="button" aria-pressed={soundEnabled} aria-label="Звук карточек" onClick={() => setSoundEnabled(value => !value)}>{soundEnabled ? 'Звук: вкл' : 'Звук: выкл'}</button>

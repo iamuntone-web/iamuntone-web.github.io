@@ -58,6 +58,6 @@ export const content = {
   companies: [
     { name: 'MEGAFON', logo: asset('megafon-logo.svg'), role: 'Senior Product Designer', period: '2024 - СЕЙЧАС', projects: projects.slice(0,2) },
     { name: 'TOP-3 FINTECH', logo: asset('fintech-logo.svg'), role: 'Middle Product Designer', period: '2022 - 2024', projects: [projects[2]] },
-    { name: 'HANDS APP', logo: asset('handsapp-logo.svg'), role: 'Junior Product Designer', period: '2021 - 2022', projects: [projects[3]] },
+    { name: 'HANDS APP', logo: asset('handsapp-logo.svg'), role: 'Junior Product Designer', period: '2021 - 2023', projects: [projects[3]] },
   ] satisfies Company[],
 };

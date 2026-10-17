@@ -1,3 +1,4 @@
+import { trackPageView } from './analytics';
 import { StrategyDeck } from './StrategyDeck';
 import { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -54,7 +55,8 @@ function App() {
   useEffect(() => {
     document.title = selected ? `${selected.caseTitle ?? selected.title} — ${content.name}` : `${content.name} — ${content.role}`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', selected?.caseIntro || selected?.description || content.intro);
-  }, [selected]);
+    trackPageView();
+  }, [selected, pathname]);
   useEffect(() => {
     const root = document.getElementById('root')!;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
